@@ -224,9 +224,7 @@ with st.sidebar:
     else:
         model_options = {
             "Llama 3.3 70B (Versatile)": "llama-3.3-70b-versatile",
-            "Llama 3.1 8B (Instant)": "llama-3.1-8b-instant",
-            "Mixtral 8x7B": "mixtral-8x7b-32768",
-            "Llama 3 8B": "llama3-8b-8192"
+            "Llama 3.1 8B (Instant)": "llama-3.1-8b-instant"
         }
         default_model = "llama-3.3-70b-versatile"
         
