@@ -8,6 +8,7 @@ from dotenv import load_dotenv
 from band import Agent
 from band.adapters import LangGraphAdapter
 from band.config import load_agent_config
+from band.runtime.types import SessionConfig
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.llm_helper import get_llm
@@ -38,7 +39,42 @@ def read_state():
         logger.error(f"State read error: {e}")
         return {}
 
-def extract_json(text):
+def fallback_quiz(topic):
+    clean_topic = topic or "the study topic"
+    return [
+        {
+            "question": f"What is the best description of {clean_topic}?",
+            "options": [
+                f"A) A core concept related to {clean_topic}",
+                "B) An unrelated historical date",
+                "C) A random list of facts",
+                "D) A type of file format",
+            ],
+            "answer": "A",
+        },
+        {
+            "question": f"Why is understanding {clean_topic} useful?",
+            "options": [
+                "A) It helps connect ideas and solve related problems",
+                "B) It removes the need to practice",
+                "C) It is only useful for memorizing definitions",
+                "D) It has no practical use",
+            ],
+            "answer": "A",
+        },
+        {
+            "question": f"What should you do when learning {clean_topic}?",
+            "options": [
+                "A) Break it into smaller ideas and test yourself",
+                "B) Skip examples",
+                "C) Memorize without understanding",
+                "D) Avoid review questions",
+            ],
+            "answer": "A",
+        },
+    ]
+
+def extract_json(text, topic=""):
     """Try to extract a JSON array from LLM response text."""
     try:
         return json.loads(text)
@@ -51,14 +87,7 @@ def extract_json(text):
             return json.loads(match.group())
         except:
             pass
-    # Fallback: return a basic structure
-    return [
-        {
-            "question": "What is the main topic you just studied?",
-            "options": ["A) Option 1", "B) Option 2", "C) Option 3", "D) Option 4"],
-            "answer": "A"
-        }
-    ]
+    return fallback_quiz(topic)
 
 async def main():
     agent_id, api_key = load_agent_config("quiz_master")
@@ -69,13 +98,18 @@ async def main():
     llm = get_llm(provider, model_to_use, temperature=0.3)
 
     system_prompt = (
-        "You are a Quiz Master Agent. Create exactly 5 MCQ questions from study notes.\n"
+        "You are a Quiz Master Agent. Create exactly 3 MCQ questions from study notes.\n"
         "Return ONLY a valid JSON array, no extra text. Format:\n"
         '[{"question": "Q?", "options": ["A) x", "B) y", "C) z", "D) w"], "answer": "A"}, ...]'
     )
 
     adapter = LangGraphAdapter(llm=llm, custom_section=system_prompt)
-    agent = Agent.create(adapter=adapter, agent_id=agent_id, api_key=api_key)
+    agent = Agent.create(
+        adapter=adapter,
+        agent_id=agent_id,
+        api_key=api_key,
+        session_config=SessionConfig(enable_context_hydration=False),
+    )
 
     async def handle_message(message):
         content = message.content if hasattr(message, "content") else str(message)
@@ -111,9 +145,11 @@ async def main():
                     avoid_prompt = f"\n\nIMPORTANT: Do NOT repeat or include any of these previous questions:\n" + "\n".join(f"- {q}" for q in avoid_questions)
 
                 response = llm_call.invoke(
-                    f"Create 5 MCQ questions as a JSON array from these notes, tailored for a student at this level: '{edu_level}':\n\n{notes[:1500]}{avoid_prompt}"
+                    f"Create exactly 3 MCQ questions as JSON only.\n"
+                    f"Level: {edu_level}\n"
+                    f"Notes:\n{notes[:900]}{avoid_prompt[:400]}"
                 )
-                quiz = extract_json(response.content)
+                quiz = extract_json(response.content, state.get("topic", ""))
                 update_state("quiz", quiz)
                 update_state("status", "quiz_ready")
                 logger.info(f"Quiz created with {len(quiz)} questions. Notifying Evaluator...")
@@ -123,7 +159,7 @@ async def main():
                     tools = AgentTools(room_id=ROOM_ID, rest=agent.runtime.link.rest)
                     await tools.get_participants()
                     await tools.send_message(
-                        content="QUIZ_READY: 5 questions created. Waiting for student answers.",
+                        content="QUIZ_READY: 3 questions created. Waiting for student answers.",
                         mentions=["@Evaluator"]
                     )
                 except Exception as ex:
@@ -150,13 +186,13 @@ async def main():
                     response = llm_call.invoke(
                         f"Based on the following study notes and student performance evaluation, "
                         f"generate EXACTLY 2 simpler review MCQ questions. Focus on the concepts the student struggled with.\n\n"
-                        f"Study Notes:\n{notes[:1500]}\n\n"
+                        f"Study Notes:\n{notes[:900]}\n\n"
                         f"Evaluation Feedback:\n{content[:500]}\n\n"
                         f"Target Education Level: {edu_level}\n\n"
                         f"Return ONLY a valid JSON array of exactly 2 questions. No extra text, no markdown wrapper. Format exactly like this:\n"
                         f'[{"question": "What is X?", "options": ["A) First", "B) Second", "C) Third", "D) Fourth"], "answer": "A"}, ...]'
                     )
-                    quiz = extract_json(response.content)
+                    quiz = extract_json(response.content, state.get("topic", ""))
                     update_state("quiz", quiz)
                     update_state("student_answers", {})
                     update_state("status", "quiz_ready")
@@ -208,9 +244,11 @@ async def main():
                             avoid_prompt = f"\n\nIMPORTANT: Do NOT repeat or include any of these previous questions:\n" + "\n".join(f"- {q}" for q in avoid_questions)
 
                         response = llm_call.invoke(
-                            f"Create 5 MCQ questions as a JSON array from these notes, tailored for a student at this level: '{edu_level}':\n\n{notes[:1500]}{avoid_prompt}"
+                            f"Create exactly 3 MCQ questions as JSON only.\n"
+                            f"Level: {edu_level}\n"
+                            f"Notes:\n{notes[:900]}{avoid_prompt[:400]}"
                         )
-                        quiz = extract_json(response.content)
+                        quiz = extract_json(response.content, state.get("topic", ""))
                         update_state("quiz", quiz)
                         update_state("status", "quiz_ready")
 
@@ -252,13 +290,13 @@ async def main():
                         response = llm_call.invoke(
                             f"Based on the following study notes and student performance evaluation, "
                             f"generate EXACTLY 2 simpler review MCQ questions. Focus on the concepts the student struggled with.\n\n"
-                            f"Study Notes:\n{notes[:1500]}\n\n"
+                            f"Study Notes:\n{notes[:900]}\n\n"
                             f"Evaluation Feedback:\n{evaluation[:500]}\n\n"
                             f"Target Education Level: {edu_level}\n\n"
                             f"Return ONLY a valid JSON array of exactly 2 questions. No extra text, no markdown wrapper. Format exactly like this:\n"
                             f'[{"question": "What is X?", "options": ["A) First", "B) Second", "C) Third", "D) Fourth"], "answer": "A"}, ...]'
                         )
-                        quiz = extract_json(response.content)
+                        quiz = extract_json(response.content, state.get("topic", ""))
                         update_state("quiz", quiz)
                         update_state("student_answers", {})
                         update_state("status", "quiz_ready")

@@ -7,6 +7,7 @@ from dotenv import load_dotenv
 from band import Agent
 from band.adapters import LangGraphAdapter
 from band.config import load_agent_config
+from band.runtime.types import SessionConfig
 
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from agents.llm_helper import get_llm
@@ -60,6 +61,7 @@ async def main():
         adapter=adapter,
         agent_id=agent_id,
         api_key=api_key,
+        session_config=SessionConfig(enable_context_hydration=False),
     )
 
     async def handle_message(message):
