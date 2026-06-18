@@ -1,0 +1,32 @@
+# Secret / credential files
+.env
+agent_config.yaml
+
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.venv/
+env/
+.uv/
+
+# Build / packaging
+*.egg-info/
+dist/
+build/
+
+# Runtime state (may contain personal study data)
+shared_state.json
+
+# IDE / editor
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

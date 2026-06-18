@@ -1,0 +1,14 @@
+{
+  "status": "idle",
+  "topic": "",
+  "notes": "",
+  "simple_notes": "",
+  "quiz": [],
+  "evaluation": "",
+  "student_answers": {},
+  "education_level": "High School (Grades 9-12)",
+  "provider": "groq",
+  "model": "llama-3.1-8b-instant",
+  "needs_remedial": false,
+  "previous_quizzes": []
+}

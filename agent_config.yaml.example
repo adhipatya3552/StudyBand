@@ -1,0 +1,19 @@
+# Paste the values from your Band.ai agent dashboard here.
+# Register 4 agents on https://app.band.ai/agents (External Agent type)
+# Copy each agent's UUID and API Key and paste below.
+
+researcher:
+  agent_id: "your-researcher-agent-uuid"
+  api_key: "band_a_your_researcher_api_key"
+
+simplifier:
+  agent_id: "your-simplifier-agent-uuid"
+  api_key: "band_a_your_simplifier_api_key"
+
+quiz_master:
+  agent_id: "your-quizmaster-agent-uuid"
+  api_key: "band_a_your_quizmaster_api_key"
+
+evaluator:
+  agent_id: "your-evaluator-agent-uuid"
+  api_key: "band_a_your_evaluator_api_key"
