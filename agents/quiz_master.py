@@ -53,6 +53,26 @@ def fallback_quiz(topic):
             "answer": "A",
         },
         {
+            "question": f"What is one important first step when studying {clean_topic}?",
+            "options": [
+                "A) Identify the main idea and key terms",
+                "B) Ignore the examples",
+                "C) Only memorize the title",
+                "D) Skip the summary",
+            ],
+            "answer": "A",
+        },
+        {
+            "question": f"How can examples help you understand {clean_topic}?",
+            "options": [
+                "A) They show how the idea works in practice",
+                "B) They make the topic unrelated",
+                "C) They replace all definitions",
+                "D) They remove the need for practice",
+            ],
+            "answer": "A",
+        },
+        {
             "question": f"Why is understanding {clean_topic} useful?",
             "options": [
                 "A) It helps connect ideas and solve related problems",
@@ -95,10 +115,10 @@ async def main():
     state = read_state()
     provider = state.get("provider", "groq")
     model_to_use = state.get("model", MODEL_NAME)
-    llm = get_llm(provider, model_to_use, temperature=0.3)
+    llm = get_llm(provider, model_to_use, temperature=0.2, max_tokens=700)
 
     system_prompt = (
-        "You are a Quiz Master Agent. Create exactly 3 MCQ questions from study notes.\n"
+        "You are a Quiz Master Agent. Create exactly 5 short MCQ questions from study notes.\n"
         "Return ONLY a valid JSON array, no extra text. Format:\n"
         '[{"question": "Q?", "options": ["A) x", "B) y", "C) z", "D) w"], "answer": "A"}, ...]'
     )
@@ -131,7 +151,7 @@ async def main():
                 provider = state.get("provider", "groq")
                 model_to_use = state.get("model", MODEL_NAME)
                 logger.info(f"Using provider: {provider}, model: {model_to_use}")
-                llm_call = get_llm(provider, model_to_use, temperature=0.3, max_tokens=500)
+                llm_call = get_llm(provider, model_to_use, temperature=0.2, max_tokens=700)
 
                 previous_quizzes = state.get("previous_quizzes", [])
                 avoid_questions = []
@@ -145,9 +165,9 @@ async def main():
                     avoid_prompt = f"\n\nIMPORTANT: Do NOT repeat or include any of these previous questions:\n" + "\n".join(f"- {q}" for q in avoid_questions)
 
                 response = llm_call.invoke(
-                    f"Create exactly 3 MCQ questions as JSON only.\n"
+                    f"Create exactly 5 short MCQ questions as JSON only.\n"
                     f"Level: {edu_level}\n"
-                    f"Notes:\n{notes[:900]}{avoid_prompt[:400]}"
+                    f"Notes:\n{notes[:700]}{avoid_prompt[:250]}"
                 )
                 quiz = extract_json(response.content, state.get("topic", ""))
                 update_state("quiz", quiz)
@@ -159,7 +179,7 @@ async def main():
                     tools = AgentTools(room_id=ROOM_ID, rest=agent.runtime.link.rest)
                     await tools.get_participants()
                     await tools.send_message(
-                        content="QUIZ_READY: 3 questions created. Waiting for student answers.",
+                        content="QUIZ_READY: 5 questions created. Waiting for student answers.",
                         mentions=["@Evaluator"]
                     )
                 except Exception as ex:
@@ -181,12 +201,12 @@ async def main():
                     provider = state.get("provider", "groq")
                     model_to_use = state.get("model", MODEL_NAME)
                     logger.info(f"Using provider: {provider}, model: {model_to_use}")
-                    llm_call = get_llm(provider, model_to_use, temperature=0.3, max_tokens=500)
+                    llm_call = get_llm(provider, model_to_use, temperature=0.2, max_tokens=700)
 
                     response = llm_call.invoke(
                         f"Based on the following study notes and student performance evaluation, "
                         f"generate EXACTLY 2 simpler review MCQ questions. Focus on the concepts the student struggled with.\n\n"
-                        f"Study Notes:\n{notes[:900]}\n\n"
+                        f"Study Notes:\n{notes[:700]}\n\n"
                         f"Evaluation Feedback:\n{content[:500]}\n\n"
                         f"Target Education Level: {edu_level}\n\n"
                         f"Return ONLY a valid JSON array of exactly 2 questions. No extra text, no markdown wrapper. Format exactly like this:\n"
@@ -230,7 +250,7 @@ async def main():
                         provider = state.get("provider", "groq")
                         model_to_use = state.get("model", MODEL_NAME)
                         logger.info(f"Using provider: {provider}, model: {model_to_use}")
-                        llm_call = get_llm(provider, model_to_use, temperature=0.3, max_tokens=500)
+                        llm_call = get_llm(provider, model_to_use, temperature=0.2, max_tokens=700)
 
                         previous_quizzes = state.get("previous_quizzes", [])
                         avoid_questions = []
@@ -244,9 +264,9 @@ async def main():
                             avoid_prompt = f"\n\nIMPORTANT: Do NOT repeat or include any of these previous questions:\n" + "\n".join(f"- {q}" for q in avoid_questions)
 
                         response = llm_call.invoke(
-                            f"Create exactly 3 MCQ questions as JSON only.\n"
+                            f"Create exactly 5 short MCQ questions as JSON only.\n"
                             f"Level: {edu_level}\n"
-                            f"Notes:\n{notes[:900]}{avoid_prompt[:400]}"
+                            f"Notes:\n{notes[:700]}{avoid_prompt[:250]}"
                         )
                         quiz = extract_json(response.content, state.get("topic", ""))
                         update_state("quiz", quiz)
@@ -285,12 +305,12 @@ async def main():
                         provider = state.get("provider", "groq")
                         model_to_use = state.get("model", MODEL_NAME)
                         logger.info(f"Using provider: {provider}, model: {model_to_use}")
-                        llm_call = get_llm(provider, model_to_use, temperature=0.3, max_tokens=500)
+                        llm_call = get_llm(provider, model_to_use, temperature=0.2, max_tokens=700)
 
                         response = llm_call.invoke(
                             f"Based on the following study notes and student performance evaluation, "
                             f"generate EXACTLY 2 simpler review MCQ questions. Focus on the concepts the student struggled with.\n\n"
-                            f"Study Notes:\n{notes[:900]}\n\n"
+                            f"Study Notes:\n{notes[:700]}\n\n"
                             f"Evaluation Feedback:\n{evaluation[:500]}\n\n"
                             f"Target Education Level: {edu_level}\n\n"
                             f"Return ONLY a valid JSON array of exactly 2 questions. No extra text, no markdown wrapper. Format exactly like this:\n"
