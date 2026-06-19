@@ -294,6 +294,9 @@ with st.sidebar:
         reset_state()
         if "answers" in st.session_state:
             del st.session_state["answers"]
+        for k in list(st.session_state.keys()):
+            if k.startswith("q_") or k.startswith("q_text_"):
+                del st.session_state[k]
         st.rerun()
 
 # ─────────────────────────────────────────
@@ -401,6 +404,9 @@ if st.session_state["active_tab"] == "Study":
                         reset_state()
                         if "answers" in st.session_state:
                             del st.session_state["answers"]
+                        for k in list(st.session_state.keys()):
+                            if k.startswith("q_") or k.startswith("q_text_"):
+                                del st.session_state[k]
                         st.session_state["active_tab"] = "Study"
                         st.rerun()
             else:
@@ -408,6 +414,9 @@ if st.session_state["active_tab"] == "Study":
                     reset_state()
                     if "answers" in st.session_state:
                         del st.session_state["answers"]
+                    for k in list(st.session_state.keys()):
+                        if k.startswith("q_") or k.startswith("q_text_"):
+                            del st.session_state[k]
                     st.session_state["active_tab"] = "Study"
                     st.rerun()
 
@@ -465,6 +474,9 @@ elif st.session_state["active_tab"] == "Quiz":
                 default_idx = None
                 if saved_ans in options:
                     default_idx = options.index(saved_ans)
+                    # Pre-populate the session state key if it doesn't exist (e.g. on tab switch)
+                    if f"q_{i}" not in st.session_state:
+                        st.session_state[f"q_{i}"] = saved_ans
                 
                 selected = st.radio(
                     f"Question {i+1}",
@@ -479,6 +491,10 @@ elif st.session_state["active_tab"] == "Quiz":
                     all_answered = False
             else:
                 default_val = saved_ans if saved_ans is not None else ""
+                # Pre-populate the session state key if it doesn't exist
+                if f"q_text_{i}" not in st.session_state and saved_ans is not None:
+                    st.session_state[f"q_text_{i}"] = saved_ans
+
                 ans = st.text_input(
                     f"Your answer for Q{i+1}",
                     value=default_val,
@@ -555,6 +571,9 @@ elif st.session_state["active_tab"] == "Results":
                 save_state(cur_state)
                 if "answers" in st.session_state:
                     del st.session_state["answers"]
+                for k in list(st.session_state.keys()):
+                    if k.startswith("q_") or k.startswith("q_text_"):
+                        del st.session_state[k]
                 st.session_state["active_tab"] = "Quiz"
                 st.rerun()
         with col2:
@@ -562,6 +581,9 @@ elif st.session_state["active_tab"] == "Results":
                 reset_state()
                 if "answers" in st.session_state:
                     del st.session_state["answers"]
+                for k in list(st.session_state.keys()):
+                    if k.startswith("q_") or k.startswith("q_text_"):
+                        del st.session_state[k]
                 st.session_state["active_tab"] = "Study"
                 st.rerun()
 

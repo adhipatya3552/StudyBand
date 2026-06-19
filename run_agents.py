@@ -4,6 +4,16 @@ import time
 import os
 import threading
 import io
+import socket
+
+# Prevent multiple instances of run_agents.py from running concurrently
+try:
+    _lock_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    _lock_socket.bind(("127.0.0.1", 45678))
+except socket.error:
+    print("\n❌ Error: Another instance of run_agents.py is already running!")
+    print("Please close any other terminals running the agents before starting a new one.\n")
+    sys.exit(1)
 
 # Force stdout/stderr to UTF-8 to prevent encoding crashes on Windows consoles
 if hasattr(sys.stdout, "buffer"):

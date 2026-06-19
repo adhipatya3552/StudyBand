@@ -180,7 +180,7 @@ pip install -r requirements.txt
 3. Edit `agent_config.yaml` and paste the credentials for your 4 External Agents registered on [app.band.ai/agents](https://app.band.ai/agents).
 
 ### 3. Running the System
-Open **two separate terminal windows** and ensure the virtual environment is activated in the terminal where you will run the agents:
+Open **two separate terminal windows** and ensure the virtual environment is activated in both terminals:
 
 * **Terminal 1 (Start the agents):**
   ```bash
@@ -189,6 +189,7 @@ Open **two separate terminal windows** and ensure the virtual environment is act
   ```
 * **Terminal 2 (Start the Web UI):**
   ```bash
+  # Activate venv if not already done, then run:
   streamlit run app.py
   ```
 
