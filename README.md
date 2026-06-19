@@ -141,10 +141,25 @@ study-band/
 
 ## 🚀 Getting Started
 
-### 1. Clone & Install
+### 1. Clone & Setup Virtual Environment
+First, clone the repository and set up a Python virtual environment:
 ```bash
+# Clone the repository
 git clone https://github.com/adhipatya3552/StudyBand.git
 cd StudyBand
+
+# Create a virtual environment
+python -m venv venv
+
+# Activate the virtual environment
+# On Windows (Command Prompt):
+venv\Scripts\activate.bat
+# On Windows (PowerShell):
+.\venv\Scripts\Activate.ps1
+# On macOS/Linux:
+source venv/bin/activate
+
+# Install the dependencies inside the virtual environment
 pip install -r requirements.txt
 ```
 
@@ -162,10 +177,11 @@ pip install -r requirements.txt
 3. Edit `agent_config.yaml` and paste the credentials for your 4 External Agents registered on [app.band.ai/agents](https://app.band.ai/agents).
 
 ### 3. Running the System
-You need to open **two separate terminal windows**:
+Open **two separate terminal windows** and ensure the virtual environment is activated in the terminal where you will run the agents:
 
 * **Terminal 1 (Start the agents):**
   ```bash
+  # Activate venv if not already done, then run:
   python run_agents.py
   ```
 * **Terminal 2 (Start the Web UI):**
