@@ -223,8 +223,8 @@ with st.sidebar:
             "Llama 3.1 Nemotron 70B (AI/ML API)": "nvidia/Llama-3.1-Nemotron-70B-Instruct",
             "Llama 3.1 8B (AI/ML API - Turbo)": "meta-llama/Llama-3.1-8B-Instruct-Turbo",
             "DeepSeek Chat V3 (AI/ML API)": "deepseek/deepseek-chat",
-            "GPT-4o Mini (AI/ML API)": "gpt-4o-mini",
-            "Claude 3.5 Sonnet (AI/ML API)": "anthropic/claude-3-5-sonnet",
+            "GPT-4o Mini (AI/ML API)": "gpt-4o-mini-2024-07-18",
+            "Claude 3.5 Sonnet (AI/ML API)": "anthropic/claude-3-5-sonnet-20241022",
             "Claude 4.5 Sonnet (AI/ML API)": "anthropic/claude-sonnet-4.5"
         }
         default_model = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
