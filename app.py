@@ -220,12 +220,11 @@ with st.sidebar:
     if selected_provider == "aimlapi":
         model_options = {
             "Llama 3.3 70B (AI/ML API - Turbo)": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
-            "Llama 3.1 Nemotron 70B (AI/ML API)": "nvidia/llama-3.1-nemotron-70B-instruct",
-            "Llama 3.1 8B (AI/ML API - Turbo)": "meta-llama/Meta-Llama-3-8B-Instruct-Turbo",
-            "DeepSeek Chat V3 (AI/ML API)": "deepseek/deepseek-chat",
-            "GPT-4o Mini (AI/ML API)": "gpt-4o-mini-2024-07-18",
-            "Claude 3.5 Sonnet (AI/ML API)": "anthropic/claude-3-5-sonnet-20241022",
-            "Claude 4.5 Sonnet (AI/ML API)": "anthropic/claude-sonnet-4.5"
+            "DeepSeek Chat (AI/ML API)": "deepseek-chat",
+            "GPT-4o Mini (AI/ML API)": "gpt-4o-mini",
+            "GPT-4o (AI/ML API)": "gpt-4o",
+            "Claude 4.5 Sonnet (AI/ML API)": "anthropic/claude-sonnet-4.5",
+            "Claude 4.6 Sonnet (AI/ML API)": "claude-sonnet-4-6"
         }
         default_model = "meta-llama/Llama-3.3-70B-Instruct-Turbo"
         
