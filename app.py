@@ -166,6 +166,18 @@ st.markdown("""
         border: 1px solid #2a2a40 !important;
         margin: 10px 0 !important;
     }
+    .result-box code, .result-box code * {
+        background-color: #d0e8d5 !important;
+        color: #1e4620 !important;
+    }
+    .quiz-box code, .quiz-box code * {
+        background-color: #ffe0b2 !important;
+        color: #3e2723 !important;
+    }
+    .agent-card code, .agent-card code * {
+        background-color: #e9ecef !important;
+        color: #2e3033 !important;
+    }
 </style>
 """, unsafe_allow_html=True)
 
@@ -434,28 +446,46 @@ elif st.session_state["active_tab"] == "Quiz":
         st.divider()
 
         if "answers" not in st.session_state:
-            st.session_state.answers = {}
+            st.session_state.answers = state.get("student_answers", {}) or {}
 
+        disabled_widgets = (status in ["evaluating", "evaluated"])
         all_answered = True
+        
         for i, q in enumerate(quiz):
             question_text = q.get("question", f"Question {i+1}")
             options = q.get("options", [])
 
             st.markdown(f'<div class="quiz-box"><b>Q{i+1}: {question_text}</b></div>', unsafe_allow_html=True)
 
+            # Get the saved answer for this question
+            saved_ans = st.session_state.answers.get(str(i))
+            if saved_ans is None:
+                saved_ans = state.get("student_answers", {}).get(str(i))
+
             if options:
+                default_idx = None
+                if saved_ans in options:
+                    default_idx = options.index(saved_ans)
+                
                 selected = st.radio(
                     f"Question {i+1}",
                     options,
-                    index=None,
+                    index=default_idx,
                     key=f"q_{i}",
                     label_visibility="collapsed",
+                    disabled=disabled_widgets,
                 )
                 st.session_state.answers[str(i)] = selected
                 if selected is None:
                     all_answered = False
             else:
-                ans = st.text_input(f"Your answer for Q{i+1}", key=f"q_text_{i}")
+                default_val = saved_ans if saved_ans is not None else ""
+                ans = st.text_input(
+                    f"Your answer for Q{i+1}",
+                    value=default_val,
+                    key=f"q_text_{i}",
+                    disabled=disabled_widgets,
+                )
                 st.session_state.answers[str(i)] = ans
                 if not ans:
                     all_answered = False
@@ -469,7 +499,7 @@ elif st.session_state["active_tab"] == "Quiz":
                 "✅ Submit Answers",
                 type="primary",
                 use_container_width=True,
-                disabled=not all_answered,
+                disabled=not all_answered or disabled_widgets,
             )
 
         if submit:
