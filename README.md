@@ -7,9 +7,12 @@
 ![Band.ai](https://img.shields.io/badge/Band.ai-Orchestration-000000?style=for-the-badge)
 ![Groq](https://img.shields.io/badge/Groq-Llama%203.3%2070B-orange?style=for-the-badge)
 ![AI/ML API](https://img.shields.io/badge/AI/ML%20API-Model%20Hub-blue?style=for-the-badge)
+[![Render](https://img.shields.io/badge/Render-Deployed-brightgreen?style=for-the-badge&logo=render)](https://studyband-multi-agent-ai-study-system.onrender.com)
 ![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)
 
 **A collaborative multi-agent educational workspace powered by Band.ai, Groq, and the AI/ML API. Four specialized AI agents work together to help students learn any topic — from raw notes research to interactive testing and real-time remedial feedback loops.**
+
+🚀 **Live Demo:** [https://studyband-multi-agent-ai-study-system.onrender.com](https://studyband-multi-agent-ai-study-system.onrender.com)
 
 </div>
 
